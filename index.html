@@ -23,6 +23,16 @@
 
     <body>
         <form method="post" action="gcode.php" enctype="multipart/form-data">
+            Laser On command: <input type="text" value="M03" name="LaserOnCommand" size="8"/><br />
+            Laser Off command: <input type="text" value="M05" name="LaserOffCommand" size="8"/><br />
+
+            PWM Control:
+            <input type="radio" name="pwmParameterCommand" value="LaserOn" checked="checked" >by Laser On command
+            <input type="radio" name="pwmParameterCommand" value="M106">by M106
+            <br />
+
+            M106 Option: <input type="text" value="P1" name="m106option" size="8"/><br />
+
             Laser Min Power [0-255]: <input type="text" value="22" name="LaserMin" size="8"/><br />
             Laser Max Power [0-255]: <input type="text" value="65" name="LaserMax" size="8"/><br />
             Laser 'Off' Power [0-255]: <input type="text" value="13" name="LaserOff" size="8"/><br />
@@ -32,6 +42,7 @@
             Scan (cutting) Rate [mm/min]: <input type="text" value="800" name="feedRate" size="8"/><br />
             
             Overscan Distance (prevents twang from showing) [mm]: <input value="3" type="text" name="overScan" size="8"/><br />
+            Flip Image Upside Down: <input type="checkbox" name="flipImage" value="true" checked="checked"/><br />
             
             Height (width autocalculated) [mm]: <input type="text" name="sizeY" size="8"/><br />
             Horizontal Resolution [mm/pixel]: <input value="0.1" type="text" name="resX" size="8"/><br />

@@ -98,6 +98,12 @@ if(!isset($_POST['sizeY']) || $_POST['sizeY'] == 0)
 
 //header('Content-Type: text/plain; charset=utf-8');
 
+$laserOnCommand=$_POST['LaserOnCommand'];
+$laserOffCommand=$_POST['LaserOffCommand'];
+
+$pwmParameterCommand=$_POST['pwmParameterCommand'];
+
+$m106option=$_POST['m106option'];
 
 $laserMax=$_POST['LaserMax'];//$laserMax=65; //out of 255
 $laserMin=$_POST['LaserMin']; //$laserMin=20; //out of 255
@@ -123,7 +129,12 @@ $pixelsY = round($sizeY/$scanGap);
 
 $tmp = imagecreatetruecolor($pixelsX, $pixelsY);
 imagecopyresampled($tmp, $src, 0, 0, 0, 0, $pixelsX, $pixelsY, $w, $h);
-flipMyImage($tmp);
+
+if(isset($_POST['flipImage']))
+  {
+//  flipMyImage($tmp);
+  imageflip($tmp, IMG_FLIP_VERTICAL);
+  }
 imagefilter($tmp,IMG_FILTER_GRAYSCALE);
 
 if($_POST['preview'] == 1)
@@ -137,7 +148,9 @@ if($_POST['preview'] == 1)
 
 header("Content-Disposition: attachment; filename=".$_FILES['image']['name'].".gcode");
 
-print("\n;Created using Nebarnix's IMG2GCO program Ver 1.0\n");
+print("\n;Created using Nanitsuku's IMG2GO program Ver 0.1\n");
+print(";https://github.com/nanitsuku/img2gco\n");
+print("\n;Based on Nebarnix's IMG2GCO program Ver 1.0\n");
 print(";http://nebarnix.com 2015\n");
 
 print(";Size in pixels X=$pixelsX, Y=$pixelsY\n");
@@ -166,7 +179,10 @@ $lineIndex--;
 
 print(";Verified size iin pixels X=$pixelIndex, Y=$lineIndex\n");*/
 print("G21\n");
-print("M106 S$laserOff; Turn laser off\n");
+if($laserOffCommand !== "")
+  print("$laserOffCommand; Turn laser off\n");
+if(strcmp($pwmParameterCommand, "M106") == 0)
+   print("M106"  . (strcmp($m106option,"") == 0 ?"":" $m106option") . " S$laserOff; Turn laser off\n");
 $prevValue = $laserOff; //Clear out the 'previous value' comparison
 print("G1 F$feedRate\n");
 
@@ -225,17 +241,29 @@ for($line=$offsetY; $line<($sizeY+$offsetY) && $lineIndex < $pixelsY; $line+=$sc
       $value = round(map($value,255,0,$laserMin,$laserMax),1); //map 8bit range to our laser range
        
       if($value != $prevValue) //Is the laser power different? no need to send the same power again
-         print("M106 S$value\n"); //Write out the laser value
+         {
+         if($laserOnCommand !== "")
+            print($laserOnCommand . (strcmp($pwmParameterCommand, "LaserOn") == 0 ? " S$value":""). "; laser on\n");
+         if(strcmp($pwmParameterCommand, "M106") == 0 )
+            print("M106" . (strcmp($m106option, "") == 0 ? "":" $m106option") . " S$value\n"); //Write out the laser value
+         }
       $prevValue = $value; //Save the laser power for the next loop
       $pixelIndex++; //Next pixel GO!
       }
-   print("M106 S$laserOff;\n\n"); //Turn off the power for the re-trace
+   if($laserOffCommand !== "")
+      print("$laserOffCommand; laser off\n");
+   if(strcmp($pwmParameterCommand, "M106") == 0)
+      print("M106" . (strcmp($m106option, "") == 0 ? "":" $m106option") . " S$laserOff; laser off\n\n"); //Turn off the power for the re-trace
    $prevValue = $laserOff; //Clear out the 'previous value' comparison 
    $lineIndex++; //Next line GO!
    }
 $lineIndex--; //Undo one for debugging porpoises
 
-print("M106 S$laserOff ;Turn laser off\n");
+if($laserOffCommand !== "")
+   print("$laserOffCommand; laser off\n");
+if(strcmp($pwmParameterCommand, "M106") == 0)
+   print("M106" . (strcmp($m106option, "") == 0 ? "":" $m106option") . " S$laserOff; laser off\n\n"); //Turn off the power for the re-trace
+
 print("G0 X$offsetX Y$offsetY F$travelRate ;Go home to start position\n");
 imagedestroy($tmp);
 ?>
