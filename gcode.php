@@ -102,7 +102,7 @@ $pixelsY = round($sizeY/$scanGap);
 
 $tmp = imagecreatetruecolor($pixelsX, $pixelsY);
 imagesavealpha($tmp, TRUE);
-imagesavealpha($src, TRUE);
+imagealphablending($tmp, FALSE);
 
 imagecopyresampled($tmp, $src, 0, 0, 0, 0, $pixelsX, $pixelsY, $w, $h);
 
