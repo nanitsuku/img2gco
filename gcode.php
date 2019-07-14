@@ -139,8 +139,8 @@ imagefilter($tmp,IMG_FILTER_GRAYSCALE);
 
 if($_POST['preview'] == 1)
    {
-   header('Content-Type: image/jpeg'); //do this to display following image
-   imagejpeg($tmp); //show image
+   header('Content-Type: image/png'); //do this to display following image
+   imagepng($tmp); //show image
    imagedestroy($tmp);
    imagedestroy($src);        
    exit(); //exit if above
