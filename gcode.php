@@ -128,6 +128,9 @@ $pixelsX = round($sizeX/$resX);
 $pixelsY = round($sizeY/$scanGap);
 
 $tmp = imagecreatetruecolor($pixelsX, $pixelsY);
+imagesavealpha($tmp, TRUE);
+imagesavealpha($src, TRUE);
+
 imagecopyresampled($tmp, $src, 0, 0, 0, 0, $pixelsX, $pixelsY, $w, $h);
 
 if(isset($_POST['flipImage']))
