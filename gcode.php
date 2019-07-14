@@ -112,6 +112,15 @@ if(isset($_POST['flipImage']))
   }
 imagefilter($tmp,IMG_FILTER_GRAYSCALE);
 
+// convert transparent to white
+$white_img = imagecreatetruecolor($pixelsX, $pixelsY);
+imagesavealpha($white_img, FALSE);
+$white = imagecolorallocate($white_img, 255, 255, 255);
+imagefill($white_img, 0, 0, $white);
+
+imagecopy($white_img, $tmp, 0, 0, 0, 0, $pixelsX, $pixelsY);
+$tmp = $white_img;
+
 if($_POST['preview'] == 1)
    {
    header('Content-Type: image/png'); //do this to display following image
